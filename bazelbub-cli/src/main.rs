@@ -3,7 +3,7 @@ use std::process::Command;
 extern crate clap;
 use clap::{Arg, App, AppSettings, SubCommand};
 
-fn main() {
+fn main() {    
 
     let matches =
         App::new("bazelbub")
@@ -43,7 +43,8 @@ fn main() {
                        .map(|r| r.collect::<Vec<_>>())
                        .unwrap_or(vec![])),
 
-        ("console", Some(m)) => println!("open the fancy repl"),
+        ("console", Some(m)) =>
+            command_console(m.value_of("target").unwrap()),
         _                    => unreachable!()
     }
 }
@@ -54,5 +55,31 @@ fn call_bazel(cmd: &str, args: Vec<&str>) -> () {
         .args(args)
         .spawn()
         .unwrap_or_else(|e| { panic!("failed to run bazel: {}", e) })
-        .wait();
+        .wait()
+        .unwrap();
+}
+
+
+use std::env;
+use std::fs::File;
+use std::io::Write;
+
+fn command_console(target: &str) -> () {
+
+    let code = include_str!("../hook.bzl");
+    let dir = env::temp_dir();
+    let path = dir.join("_hook.bzl");
+    let mut file = File::create(path.clone()).unwrap();
+
+    file.write_all(code.as_bytes()).unwrap();
+
+    let path_string = format!("{}%hook_aspect", path.display());
+    let mut vec = Vec::new();
+    vec.push("--aspects");
+    vec.push(&path_string);
+    vec.push(target);
+
+    call_bazel("build", vec);
+
+    drop(file);
 }
