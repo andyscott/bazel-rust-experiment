@@ -1,0 +1,4 @@
+/bazel-*
+target/
+.DS_Store
+.bazelrc

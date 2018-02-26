@@ -1,0 +1,7 @@
+[package]
+name = "bz"
+version = "0.0.0"
+authors = ["Andy Scott <andy.g.scott@gmail.com>"]
+
+[dependencies]
+clap = "2.30.0"
