@@ -1,3 +1,5 @@
+use std::process::Command;
+
 extern crate clap;
 use clap::{Arg, App, AppSettings, SubCommand};
 
@@ -7,7 +9,7 @@ fn main() {
         App::new("bazelbub")
         .version("0.0.0")
         .author("Andy Scott <andy.g.scott@gmail.com>")
-        .about("local dev workflows for Bazel")
+        .about("local dev workflows for Basel")
         .settings(&[AppSettings::ArgRequiredElseHelp])
         .global_settings(&[AppSettings::ColoredHelp])
         .subcommand(SubCommand::with_name("console")
@@ -30,10 +32,27 @@ fn main() {
                          .allow_hyphen_values(true)))
         .get_matches();
 
-    match matches.subcommand_name() {
-        Some("build")   => println!("invoke bazel build!"),
-        Some("run")     => println!("invoke bazel run!"),
-        Some("console") => println!("open the fancy repl"),
-        _               => println!("oh no")
+    match matches.subcommand() {
+        ("build",   Some(m)) =>
+            call_bazel("build", m.values_of("args")
+                       .map(|r| r.collect::<Vec<_>>())
+                       .unwrap_or(vec![])),
+
+        ("run",     Some(m)) =>
+            call_bazel("run", m.values_of("args")
+                       .map(|r| r.collect::<Vec<_>>())
+                       .unwrap_or(vec![])),
+
+        ("console", Some(m)) => println!("open the fancy repl"),
+        _                    => unreachable!()
     }
+}
+
+fn call_bazel(cmd: &str, args: Vec<&str>) -> () {
+    Command::new("bazel")
+        .arg(cmd)
+        .args(args)
+        .spawn()
+        .unwrap_or_else(|e| { panic!("failed to run bazel: {}", e) })
+        .wait();
 }
