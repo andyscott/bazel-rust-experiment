@@ -19,13 +19,6 @@ version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
-name = "bz"
-version = "0.0.0"
-dependencies = [
- "clap 2.30.0 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
 name = "clap"
 version = "2.30.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -108,6 +101,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "winapi-x86_64-pc-windows-gnu"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "zb"
+version = "0.0.0"
+dependencies = [
+ "clap 2.30.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
 
 [metadata]
 "checksum ansi_term 0.10.2 (registry+https://github.com/rust-lang/crates.io-index)" = "6b3568b48b7cefa6b8ce125f9bb4989e52fbcc29ebea88df04cc7c5f12f70455"
