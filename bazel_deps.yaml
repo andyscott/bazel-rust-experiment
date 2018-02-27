@@ -1,0 +1,27 @@
+options:
+  buildHeader: [ "load(\"@io_bazel_rules_scala//scala:scala_import.bzl\", \"scala_import\")" ]
+  languages: [ "java", "scala:2.11.9" ]
+  transitivity: runtime_deps
+  versionConflictPolicy: highest
+
+dependencies:
+  io.circe:
+    circe:
+      lang: scala
+      modules: [ "core", "jawn" ]
+      version: "0.9.1"
+  
+  io.get-coursier:
+    coursier:
+      lang: scala
+      modules: [ "", "cache" ]
+      version: "1.0.1"
+  
+  org.typelevel:
+    cats:
+      lang: scala
+      modules: [ "core", "kernel" ]
+      version: "1.0.1"
+    cats-effect:
+      lang: scala
+      version: "0.8"
