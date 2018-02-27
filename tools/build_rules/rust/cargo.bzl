@@ -4,6 +4,7 @@ def cargo_bin(
         manifest_path = "Cargo.toml",
         bin_name = None,
         release = False,
+        visibility = None,
 ):
     bin_name = name if bin_name == None else bin_name
 
@@ -29,7 +30,8 @@ def cargo_bin(
         cmd = cmd,
         executable = True,
         local = 1,
-        tags = ["manual", "requires-network", "arc-ignore"],
+        tags = ["requires-network", "arc-ignore"],
+        visibility = visibility,
     )
 
 def _strip_margin(str, delim = "|"):
