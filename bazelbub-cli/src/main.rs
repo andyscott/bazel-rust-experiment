@@ -3,6 +3,7 @@ use clap::{Arg, App, AppSettings, SubCommand};
 
 use std::env;
 use std::fs::File;
+use std::io::Read;
 use std::io::Write;
 use std::process::Command;
 
@@ -52,6 +53,17 @@ fn main() {
     }
 }
 
+extern crate serde;
+extern crate serde_json;
+
+#[macro_use]
+extern crate serde_derive;
+
+#[derive(Deserialize, Debug)]
+struct AspectInfo {
+    runtime_classpath: Vec<String>,
+}
+
 fn command_console(target: &str) -> () {
     let dir = env::temp_dir();
 
@@ -77,6 +89,34 @@ fn command_console(target: &str) -> () {
     drop(file_workspace);
     drop(file_build);
     drop(file_skylark);
+
+    let output1 =
+        Command::new("bazel").args(&["info", "bazel-bin"])
+        .output().unwrap();
+    let sout1 = String::from_utf8(output1.stdout).unwrap();
+    let bazel_bin = sout1.trim();
+
+    let output2 =
+        Command::new("bazel").args(&["query", "--output=label", target])
+        .output().unwrap();
+    let sout2 = String::from_utf8(output2.stdout).unwrap();
+    let bits = sout2.trim().split(':').collect::<Vec<&str>>();
+    let (package, name) = (bits[0], bits[1]);
+
+    let output_path = &format!("{}{}/bazelbub.{}.json", bazel_bin, package, name);
+
+    println!("foo: {}", output_path);
+
+    let mut data = String::new();
+    let mut f = File::open(output_path).unwrap();
+    f.read_to_string(&mut data).unwrap();
+
+    let aspect_info: AspectInfo = serde_json::from_str(&data).ok().unwrap();
+
+    println!("launch ammonite with classpath:");
+    for entry in &aspect_info.runtime_classpath {
+        println!(" - {}", entry);
+    }
 }
 
 fn call_bazel(cmd: &str, args: Vec<&str>) -> () {
